@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Paper Manager</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --accent: #1abc9c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        nav {
+            background-color: var(--primary);
+            padding: 0.75rem 0;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        nav ul li {
+            margin: 0 1rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            opacity: 0.8;
+        }
+        
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .papers-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .paper-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        
+        .paper-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .paper-card h3 {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            cursor: pointer;
+        }
+        
+        .paper-card p.author {
+            padding: 0.5rem 1rem;
+            font-style: italic;
+            color: var(--dark);
+            border-bottom: 1px solid #eee;
+        }
+        
+        .paper-summary {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 1rem;
+            transition: max-height 0.5s ease;
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .paper-card:hover .paper-summary {
+            max-height: 150px;
+            padding: 1rem;
+        }
+        
+        .upload-section {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .upload-section h2 {
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+        
+        form {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 600;
+        }
+        
+        button:hover {
+            background-color: #16a085;
+        }
+        
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+
+        /* Detail page styles */
+        .paper-detail {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .paper-detail h1 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .paper-detail .meta {
+            margin-bottom: 2rem;
+            color: var(--dark);
+            font-style: italic;
+        }
+        
+        .paper-detail .summary {
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        
+        .paper-detail .back-button {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+        }
+
+        /* Script to store and retrieve data locally */
+        #no-papers-message {
+            text-align: center;
+            padding: 2rem;
+            color: var(--dark);
+            font-style: italic;
+        }
+        
+        .view-all-papers {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 1rem;
+        }
+        
+        .view-all-papers a {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .recent-papers-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Research Paper Manager</h1>
+        <p>Upload, organize, and summarize your research papers</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html" class="active">Home</a></li>
+            <li><a href="all-papers.html">All Papers</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <section class="upload-section">
+            <h2>Add New Paper</h2>
+            <form id="paper-form">
+                <div>
+                    <label for="paper-title">Paper Title</label>
+                    <input type="text" id="paper-title" placeholder="Enter the title of the paper" required>
+                </div>
+                
+                <div>
+                    <label for="paper-file">Upload Paper (PDF)</label>
+                    <input type="file" id="paper-file" accept=".pdf">
+                </div>
+                
+                <div>
+                    <label for="paper-summary">Summary</label>
+                    <textarea id="paper-summary" placeholder="Write a summary of the paper..." required></textarea>
+                </div>
+                
+                <div>
+                    <label for="contributor-name">Your Name</label>
+                    <input type="text" id="contributor-name" placeholder="Enter your name" required>
+                </div>
+                
+                <button type="submit">Add Paper</button>
+            </form>
+        </section>
+        
+        <div class="recent-papers-header">
+            <h2>Recent Papers</h2>
+            <div class="view-all-papers">
+                <a href="all-papers.html">View All Papers</a>
+            </div>
+        </div>
+        
+        <div class="papers-container" id="papers-list">
+            <!-- Recent papers will be added here dynamically -->
+            <div id="no-papers-message">No papers added yet. Add your first paper above!</div>
+        </div>
+    </main>
+    
+
+
+    <script>
+        // Initialize papers array from localStorage or empty array if none exists
+        let papers = JSON.parse(localStorage.getItem('researchPapers')) || [];
+        
+        // Function to update the papers display
+        function updatePapersDisplay() {
+            const papersList = document.getElementById('papers-list');
+            const noMessage = document.getElementById('no-papers-message');
+            
+            // Clear existing papers
+            papersList.innerHTML = '';
+            
+            if (papers.length === 0) {
+                papersList.appendChild(noMessage);
+                return;
+            }
+            
+            // Get only the most recent 6 papers
+            const recentPapers = papers.slice(Math.max(0, papers.length - 6)).reverse();
+            
+            // Add each paper to the display
+            recentPapers.forEach((paper, index) => {
+                const actualIndex = papers.indexOf(paper);
+                const paperCard = document.createElement('div');
+                paperCard.className = 'paper-card';
+                
+                paperCard.innerHTML = `
+                    <h3 onclick="openPaperDetail(${actualIndex})">${paper.title}</h3>
+                    <p class="author">Added by: ${paper.contributor}</p>
+                    <div class="paper-summary">
+                        <p>${paper.summary.length > 100 ? paper.summary.substring(0, 100) + '...' : paper.summary}</p>
+                    </div>
+                `;
+                
+                papersList.appendChild(paperCard);
+            });
+        }
+        
+        // Function to add a new paper
+        document.getElementById('paper-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('paper-title').value;
+            const summary = document.getElementById('paper-summary').value;
+            const contributor = document.getElementById('contributor-name').value;
+            
+            // Create a new paper object
+            const newPaper = {
+                title: title,
+                summary: summary,
+                contributor: contributor,
+                dateAdded: new Date().toLocaleDateString()
+            };
+            
+            // Add to papers array
+            papers.push(newPaper);
+            
+            // Save to localStorage
+            localStorage.setItem('researchPapers', JSON.stringify(papers));
+            
+            // Update display
+            updatePapersDisplay();
+            
+            // Clear form
+            document.getElementById('paper-form').reset();
+        });
+        
+        // Function to open paper detail page
+        function openPaperDetail(index) {
+            // Save the index to localStorage
+            localStorage.setItem('currentPaperIndex', index);
+            
+            // Redirect to detail page
+            window.location.href = 'paper-detail.html';
+        }
+        
+        // Initialize the display
+        updatePapersDisplay();
+    </script>
+</body>
+</html>

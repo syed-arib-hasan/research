@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paper Detail</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --accent: #1abc9c;
+            --light: #ecf0f1;
+            --dark: #34495e;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        nav {
+            background-color: var(--primary);
+            padding: 0.75rem 0;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        nav ul li {
+            margin: 0 1rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: opacity 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            opacity: 0.8;
+        }
+        
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .paper-detail {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .paper-detail h1 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .paper-detail .meta {
+            margin-bottom: 2rem;
+            color: var(--dark);
+            font-style: italic;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 1rem;
+        }
+        
+        .paper-detail .summary {
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        
+        .back-button {
+            display: inline-block;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+        
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+        
+        #error-message {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Research Paper Detail</h1>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="all-papers.html">All Papers</a></li>
+        </ul>
+    </nav>
+    
+    <main>
+        <div id="paper-container">
+            <!-- Paper details will load here -->
+        </div>
+        
+        <a href="javascript:history.back()" class="back-button">Back</a>
+    </main>
+    
+
+    <script>
+        // Get paper index from localStorage
+        const paperIndex = localStorage.getItem('currentPaperIndex');
+        
+        // Get papers array from localStorage
+        const papers = JSON.parse(localStorage.getItem('researchPapers')) || [];
+        
+        // Get the container element
+        const paperContainer = document.getElementById('paper-container');
+        
+        // Check if paper exists
+        if (paperIndex !== null && papers[paperIndex]) {
+            const paper = papers[paperIndex];
+            
+            // Create paper detail content
+            const paperDetail = document.createElement('div');
+            paperDetail.className = 'paper-detail';
+            
+            paperDetail.innerHTML = `
+                <h1>${paper.title}</h1>
+                <div class="meta">
+                    <p>Added by: ${paper.contributor}</p>
+                    <p>Date added: ${paper.dateAdded}</p>
+                </div>
+                <div class="summary">
+                    <h2>Summary</h2>
+                    <p>${paper.summary}</p>
+                </div>
+            `;
+            
+            // Set page title
+            document.title = `${paper.title} - Research Paper Detail`;
+            
+            // Add to container
+            paperContainer.appendChild(paperDetail);
+        } else {
+            // Show error if paper not found
+            const errorMessage = document.createElement('div');
+            errorMessage.id = 'error-message';
+            errorMessage.innerHTML = `
+                <h2>Paper Not Found</h2>
+                <p>Sorry, the requested paper could not be found.</p>
+            `;
+            
+            paperContainer.appendChild(errorMessage);
+        }
+    </script>
+</body>
+</html>
